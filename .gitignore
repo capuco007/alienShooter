@@ -1,0 +1,5 @@
+__pycache__
+*.blend1
+Save.dat
+/Config.json
+/database/GameJolt.json
