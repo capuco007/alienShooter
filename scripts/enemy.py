@@ -25,7 +25,7 @@ def start(cont):
 def update(cont):
     own = cont.owner
     scene = own.scene
-    print(own['atack'])
+    
     Collision = cont.sensors['Collision']
     if own['time'] == 0:
         own['x'] = 0

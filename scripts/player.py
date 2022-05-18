@@ -4,7 +4,10 @@ from mathutils import Vector
 
 def start(cont):
     own = cont.owner
+    scene = own.scene
     own['GunList'] = []
+   
+    
 
 def Colision(cont):
     own = cont.owner
@@ -13,6 +16,9 @@ def Colision(cont):
     #sangue = scene.objects['']
     dano = cont.sensors['dano']
     getGun = cont.sensors['gun']
+    mesh_arm_p = own.childrenRecursive.get('mesh_arm_p')
+    if own['GunList']:
+        mesh_arm_p.replaceMesh( str(own['GunList'][0]))
 
 
     
@@ -23,6 +29,7 @@ def Colision(cont):
         
         if kb[bge.events.EKEY].activated:
             if not guns['tipo'] in own['GunList']:
+                #mesh_arm_p.replaceMesh( str(guns['tipo']))
                 if len(own['GunList'])<2:
                     itenGun.endObject()
                     own['GunList'].append(guns['tipo'])
@@ -43,7 +50,7 @@ def coin(cont):
     coinColider = cont.sensors['coins']
     if coinColider.positive:
         own['coin_player'] += 1
-        print(own['coin_player'])
+        
 
 class Player(bge.types.KX_PythonComponent):
     # Put your arguments here of the format ("key", default_value).
@@ -64,6 +71,10 @@ class Player(bge.types.KX_PythonComponent):
         self.cash = 0
         self.object.collisionCallbacks.append(self.onCollision)
         self.activeDash = False
+        mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
+        #mesh_arm_p.replaceMesh(None)
+        self.estamina = 100
+        self.recargEstam = 100
 
     def onCollision(self,object):
         if 'dano' in object:
@@ -104,26 +115,35 @@ class Player(bge.types.KX_PythonComponent):
         if self.object['GunList'] != 0:
             if len(self.object['GunList'])>1:
                 if kb[bge.events.QKEY].activated:
+                    mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
                     self.timeSot = 0
                     self.object['GunList'].reverse()
-                    print(self.object['GunList'])
+                    
+                   
+                    mesh_arm_p.replaceMesh( str(self.object['GunList'][0]))
 
     def dash(self):
         kb = bge.logic.keyboard.inputs
+        
         if self.timeDash >0:
             self.timeDash -= 1
         if kb[bge.events.SPACEKEY].activated and self.timeDash == 0:
-            self.timeDash = 15
+            
+            if self.estamina >= self.recargEstam:
+                self.estamina -= self.recargEstam
+                self.timeDash = 15
         if self.timeDash >8:
             self.speed = 0.8
         else:
             self.speed = 0.2
-
+        if self.estamina < 100:
+            self.estamina += 1
     def efects(self):
-        #self.shadowPlay.worldPosition = self.object.worldPosition
-        #self.shadowPlay.worldPosition.z = self.object.worldPosition.z-0.5
+        
         pass
     def update(self):
+        print(self.estamina)
+        
 
         if self.life >0:
             self.move()
