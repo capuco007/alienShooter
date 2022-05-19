@@ -6,6 +6,7 @@ def start(cont):
     own = cont.owner
     scene = own.scene
     own['GunList'] = []
+    own['gunSpw'] = ""
    
     
 
@@ -13,32 +14,33 @@ def Colision(cont):
     own = cont.owner
     scene = own.scene
     kb = bge.logic.keyboard.inputs
-    #sangue = scene.objects['']
     dano = cont.sensors['dano']
     getGun = cont.sensors['gun']
+    spw_gun = own.childrenRecursive.get('spw_gun')
     mesh_arm_p = own.childrenRecursive.get('mesh_arm_p')
+
     if own['GunList']:
         mesh_arm_p.replaceMesh( str(own['GunList'][0]))
 
-
+   
     
     # Pegar Armas
     if getGun.positive:
-        guns = getGun.hitObject.groupObject
+        gunGroup = getGun.hitObject.groupObject
         itenGun = getGun.hitObject
         
         if kb[bge.events.EKEY].activated:
-            if not guns['tipo'] in own['GunList']:
-                #mesh_arm_p.replaceMesh( str(guns['tipo']))
-                if len(own['GunList'])<2:
-                    itenGun.endObject()
-                    own['GunList'].append(guns['tipo'])
+            if not gunGroup['tipo'] in own['GunList']:
+                if len(own['GunList'])>=2:  
+                    iten = own['GunList'][0]
+                    del own['GunList'][0]
+                    obj = scene.addObject('guns',gunGroup)
+                    obj['tipo'] = iten
+                    own['GunList'].reverse()
 
+                own['GunList'] = [gunGroup['tipo']] + own['GunList']
+                gunGroup.endObject()
                     
-                else:
-                    own['GunList'][0] = guns['tipo']
-                   
-                
 
 
     # Tomar Dano
@@ -51,7 +53,7 @@ def coin(cont):
     if coinColider.positive:
         own['coin_player'] += 1
         
-
+    
 class Player(bge.types.KX_PythonComponent):
     # Put your arguments here of the format ("key", default_value).
     # These values are exposed to the UI.
@@ -100,15 +102,20 @@ class Player(bge.types.KX_PythonComponent):
         ms = bge.logic.mouse.inputs
 
         if self.object['GunList']:
-            if self.object['GunList'][0] == 'pistol':
+            if self.object['GunList'][0] == 'pistola':
                 if ms[bge.events.LEFTMOUSE].active and self.timeSot == 0:
                     self.scene.addObject('buler_payer',self.spw_bulet,100)
                     self.timeSot = 10
 
-            if self.object['GunList'][0] == 'shot':
+            if self.object['GunList'][0] == 'metralhadora':
                 if ms[bge.events.LEFTMOUSE].active and self.timeSot == 0:
                     self.scene.addObject('buler_payer',self.spw_bulet,100)
                     self.timeSot = 5
+
+            if self.object['GunList'][0] == 'shotgun':
+                if ms[bge.events.LEFTMOUSE].active and self.timeSot == 0:
+                    self.scene.addObject('buler_payer',self.spw_bulet,100)
+                    self.timeSot = 50
 
     def tradeGun(self):
         kb = bge.logic.keyboard.inputs
@@ -142,7 +149,7 @@ class Player(bge.types.KX_PythonComponent):
         
         pass
     def update(self):
-        print(self.estamina)
+       
         
 
         if self.life >0:
