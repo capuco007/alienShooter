@@ -7,8 +7,8 @@ def start(cont):
     scene = own.scene
     own['GunList'] = []
     own['gunSpw'] = ""
-   
-    
+
+
 
 def Colision(cont):
     own = cont.owner
@@ -22,16 +22,16 @@ def Colision(cont):
     if own['GunList']:
         mesh_arm_p.replaceMesh( str(own['GunList'][0]))
 
-   
-    
+
+
     # Pegar Armas
     if getGun.positive:
         gunGroup = getGun.hitObject.groupObject
         itenGun = getGun.hitObject
-        
+
         if kb[bge.events.EKEY].activated:
             if not gunGroup['tipo'] in own['GunList']:
-                if len(own['GunList'])>=2:  
+                if len(own['GunList'])>=2:
                     iten = own['GunList'][0]
                     del own['GunList'][0]
                     obj = scene.addObject('guns',gunGroup)
@@ -40,7 +40,7 @@ def Colision(cont):
 
                 own['GunList'] = [gunGroup['tipo']] + own['GunList']
                 gunGroup.endObject()
-                    
+
 
 
     # Tomar Dano
@@ -52,8 +52,8 @@ def coin(cont):
     coinColider = cont.sensors['coins']
     if coinColider.positive:
         own['coin_player'] += 1
-        
-    
+
+
 class Player(bge.types.KX_PythonComponent):
     # Put your arguments here of the format ("key", default_value).
     # These values are exposed to the UI.
@@ -96,6 +96,7 @@ class Player(bge.types.KX_PythonComponent):
         x = kb[bge.events.DKEY].active - kb[bge.events.AKEY].active
         self.char.walkDirection = Vector([x,y,0]).normalized()*self.speed
 
+
     def shot(self):
         if self.timeSot > 0:
             self.timeSot -=1
@@ -125,17 +126,17 @@ class Player(bge.types.KX_PythonComponent):
                     mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
                     self.timeSot = 0
                     self.object['GunList'].reverse()
-                    
-                   
+
+
                     mesh_arm_p.replaceMesh( str(self.object['GunList'][0]))
 
     def dash(self):
         kb = bge.logic.keyboard.inputs
-        
+
         if self.timeDash >0:
             self.timeDash -= 1
         if kb[bge.events.SPACEKEY].activated and self.timeDash == 0:
-            
+
             if self.estamina >= self.recargEstam:
                 self.estamina -= self.recargEstam
                 self.timeDash = 15
@@ -146,17 +147,68 @@ class Player(bge.types.KX_PythonComponent):
         if self.estamina < 100:
             self.estamina += 1
     def efects(self):
-        
         pass
-    def update(self):
-       
-        
 
-        if self.life >0:
+
+    def save(self):
+        savegame = {
+            'player': {
+                'GunList': self.object['GunList'],
+                'life': self.life,
+                'cash': self.cash,
+                'recargEstam': self.recargEstam,
+                'position': list(self.object.worldPosition)
+            },
+            'objects': [],
+        }
+
+        for o in self.object.scene.objects:
+            if 'save' in o:
+                savegame['objects'].append(o.name)
+
+        with open(bge.logic.expandPath('//save.txt'), 'w') as openedFile:
+            openedFile.write(str(savegame))
+            print('> Savegame salvo em', openedFile.name)
+
+
+    def load(self):
+        from ast import literal_eval
+
+        savegame = {}
+
+        try:
+            with open(bge.logic.expandPath('//save.txt'), 'r') as openedFile:
+                savegame = literal_eval(openedFile.read())
+                print('> Savegame carregado de', openedFile.name)
+        except Exception as e:
+            print('X Savegame não existe', e)
+
+        if savegame:
+            self.object['GunList'] = savegame['player']['GunList']
+            self.life = savegame['player']['life']
+            self.cash = savegame['player']['cash']
+            self.recargEstam = savegame['player']['recargEstam']
+            self.object.worldPosition = savegame['player']['position']
+
+            for o in self.object.scene.objects:
+                if 'save' in o and not o.name in savegame['objects']:
+                    o.endObject()
+
+
+    def update(self):
+
+        if self.life > 0:
             self.move()
             self.shot()
             self.efects()
             self.tradeGun()
+
+            if bge.logic.keyboard.inputs[bge.events.F1KEY].activated:
+                self.load()
+
+            if bge.logic.keyboard.inputs[bge.events.F2KEY].activated:
+                self.save()
+
             if self.activeDash:
                 self.dash()
-        
+
