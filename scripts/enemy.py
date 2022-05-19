@@ -39,7 +39,7 @@ def update(cont):
         
 
     if own['life'] == 0:
-        own.endObject()
+        own['group'].endObject()
         scene.addObject('spw_coin',own,0)
        
 

@@ -8,8 +8,6 @@ def start(cont):
     own['GunList'] = []
     own['gunSpw'] = ""
 
-
-
 def Colision(cont):
     own = cont.owner
     scene = own.scene
@@ -53,7 +51,6 @@ def coin(cont):
     if coinColider.positive:
         own['coin_player'] += 1
 
-
 class Player(bge.types.KX_PythonComponent):
     # Put your arguments here of the format ("key", default_value).
     # These values are exposed to the UI.
@@ -77,7 +74,9 @@ class Player(bge.types.KX_PythonComponent):
         #mesh_arm_p.replaceMesh(None)
         self.estamina = 100
         self.recargEstam = 100
-
+        
+        
+        
     def onCollision(self,object):
         if 'dano' in object:
             bge.logic.sendMessage('shake')
@@ -86,8 +85,12 @@ class Player(bge.types.KX_PythonComponent):
             tc = bge.logic.keyboard.inputs
             if self.activeDash == False:
                 if tc[bge.events.EKEY].activated:
-                    object.endObject()
+                    object.groupObject.endObject()
                     self.activeDash = True
+        if 'arena' in object:
+            eixo = self.scene.objects['eixo']
+            eixo.worldPosition.x = object.worldPosition.x
+            eixo.worldPosition.y = object.worldPosition.y - 10.0
 
 
     def move(self):
@@ -95,7 +98,6 @@ class Player(bge.types.KX_PythonComponent):
         y = kb[bge.events.WKEY].active - kb[bge.events.SKEY].active
         x = kb[bge.events.DKEY].active - kb[bge.events.AKEY].active
         self.char.walkDirection = Vector([x,y,0]).normalized()*self.speed
-
 
     def shot(self):
         if self.timeSot > 0:
@@ -119,6 +121,8 @@ class Player(bge.types.KX_PythonComponent):
                     self.timeSot = 50
 
     def tradeGun(self):
+        mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
+       
         kb = bge.logic.keyboard.inputs
         if self.object['GunList'] != 0:
             if len(self.object['GunList'])>1:
@@ -126,10 +130,11 @@ class Player(bge.types.KX_PythonComponent):
                     mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
                     self.timeSot = 0
                     self.object['GunList'].reverse()
-
-
                     mesh_arm_p.replaceMesh( str(self.object['GunList'][0]))
 
+
+            
+           
     def dash(self):
         kb = bge.logic.keyboard.inputs
 
@@ -146,9 +151,9 @@ class Player(bge.types.KX_PythonComponent):
             self.speed = 0.2
         if self.estamina < 100:
             self.estamina += 1
+
     def efects(self):
         pass
-
 
     def save(self):
         savegame = {
@@ -157,7 +162,8 @@ class Player(bge.types.KX_PythonComponent):
                 'life': self.life,
                 'cash': self.cash,
                 'recargEstam': self.recargEstam,
-                'position': list(self.object.worldPosition)
+                'position': list(self.object.worldPosition),
+                'activeDash': self.activeDash
             },
             'objects': [],
         }
@@ -165,11 +171,17 @@ class Player(bge.types.KX_PythonComponent):
         for o in self.object.scene.objects:
             if 'save' in o:
                 savegame['objects'].append(o.name)
+            if 'dor' in o:
+                print(o)
+                for prop in o.getPropertyNames():
+                    savegame[o.name] = o[prop]
+
+        
+            
 
         with open(bge.logic.expandPath('//save.txt'), 'w') as openedFile:
             openedFile.write(str(savegame))
             print('> Savegame salvo em', openedFile.name)
-
 
     def load(self):
         from ast import literal_eval
@@ -189,11 +201,19 @@ class Player(bge.types.KX_PythonComponent):
             self.cash = savegame['player']['cash']
             self.recargEstam = savegame['player']['recargEstam']
             self.object.worldPosition = savegame['player']['position']
+            self.activeDash = savegame['player']['activeDash']
 
             for o in self.object.scene.objects:
                 if 'save' in o and not o.name in savegame['objects']:
                     o.endObject()
+                if 'dor' in o and o.name in savegame:
+                    o['status'] = savegame[o.name]
 
+        mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
+        self.timeSot = 0
+        #self.object['GunList'].reverse()
+        mesh_arm_p.replaceMesh( str(self.object['GunList'][0]))
+                
 
     def update(self):
 
