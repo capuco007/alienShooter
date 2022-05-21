@@ -2,11 +2,14 @@ import bge
 from collections import OrderedDict
 from mathutils import Vector
 
+
 def start(cont):
     own = cont.owner
     scene = own.scene
     own['GunList'] = []
     own['gunSpw'] = ""
+    
+    
 
 def Colision(cont):
     own = cont.owner
@@ -70,16 +73,25 @@ class Player(bge.types.KX_PythonComponent):
         self.cash = 0
         self.object.collisionCallbacks.append(self.onCollision)
         self.activeDash = False
-        mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
-        #mesh_arm_p.replaceMesh(None)
         self.estamina = 100
         self.recargEstam = 100
+        self.key = ['1']
         
+        self.timeSaveLoad = 0
+        if 'load' in  bge.logic.globalDict:
+            self.timeSaveLoad =  bge.logic.globalDict['load']
+
+
         
+
+       
         
+    
     def onCollision(self,object):
         if 'dano' in object:
             bge.logic.sendMessage('shake')
+            if self.life >0:
+                self.life -= 1
 
         if 'dash' in object:
             tc = bge.logic.keyboard.inputs
@@ -88,11 +100,23 @@ class Player(bge.types.KX_PythonComponent):
                     object.groupObject.endObject()
                     self.activeDash = True
         if 'arena' in object:
-            eixo = self.scene.objects['eixo']
-            eixo.worldPosition.x = object.worldPosition.x
-            eixo.worldPosition.y = object.worldPosition.y - 10.0
+            pass
+            #eixo = self.scene.objects['eixo']
+            #eixo.worldPosition.x = object.worldPosition.x
+            #eixo.worldPosition.y = object.worldPosition.y - 10.0
 
+        if 'openDor' in object:
+            tc = bge.logic.keyboard.inputs
+            if tc[bge.events.EKEY].activated:
+                if object.groupObject['key'] in self.key:
+                    object['openDor'] = True
 
+        if 'save' in object:
+            
+            if object['save'] == True:
+                self.timeSaveLoad = 5
+                object['save'] = False
+            
     def move(self):
         kb = bge.logic.keyboard.inputs
         y = kb[bge.events.WKEY].active - kb[bge.events.SKEY].active
@@ -131,10 +155,7 @@ class Player(bge.types.KX_PythonComponent):
                     self.timeSot = 0
                     self.object['GunList'].reverse()
                     mesh_arm_p.replaceMesh( str(self.object['GunList'][0]))
-
-
-            
-           
+               
     def dash(self):
         kb = bge.logic.keyboard.inputs
 
@@ -172,7 +193,11 @@ class Player(bge.types.KX_PythonComponent):
             if 'save' in o:
                 savegame['objects'].append(o.name)
             if 'dor' in o:
-                print(o)
+                
+                for prop in o.getPropertyNames():
+                    savegame[o.name] = o[prop]
+
+            if 'openDor' in o:
                 for prop in o.getPropertyNames():
                     savegame[o.name] = o[prop]
 
@@ -209,15 +234,19 @@ class Player(bge.types.KX_PythonComponent):
                 if 'dor' in o and o.name in savegame:
                     o['status'] = savegame[o.name]
 
+                if 'openDor' in o and o.name in savegame:
+                    o['openDor'] = savegame[o.name]
+
         mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
         self.timeSot = 0
         #self.object['GunList'].reverse()
         mesh_arm_p.replaceMesh( str(self.object['GunList'][0]))
                 
-
     def update(self):
-
+        print(self.timeSaveLoad)
+        
         if self.life > 0:
+
             self.move()
             self.shot()
             self.efects()
@@ -231,4 +260,20 @@ class Player(bge.types.KX_PythonComponent):
 
             if self.activeDash:
                 self.dash()
+        else:
+            bge.logic.globalDict['load'] = -10
+            bge.logic.restartGame()
+           
+
+        if self.timeSaveLoad >0:
+            self.timeSaveLoad -= 1
+
+        if self.timeSaveLoad < -0:
+            self.timeSaveLoad += 1
+
+        if self.timeSaveLoad == 1:
+            self.save()
+        if self.timeSaveLoad == -1:
+            self.load()
+           
 
