@@ -131,17 +131,17 @@ class Player(bge.types.KX_PythonComponent):
         if self.object['GunList']:
             if self.object['GunList'][0] == 'pistola':
                 if ms[bge.events.LEFTMOUSE].active and self.timeSot == 0:
-                    self.scene.addObject('buler_payer',self.spw_bulet,100)
+                    self.scene.addObject('buler_payer',self.spw_bulet,25)
                     self.timeSot = 10
 
             if self.object['GunList'][0] == 'metralhadora':
                 if ms[bge.events.LEFTMOUSE].active and self.timeSot == 0:
-                    self.scene.addObject('buler_payer',self.spw_bulet,100)
+                    self.scene.addObject('buler_payer',self.spw_bulet,25)
                     self.timeSot = 5
 
             if self.object['GunList'][0] == 'shotgun':
                 if ms[bge.events.LEFTMOUSE].active and self.timeSot == 0:
-                    self.scene.addObject('buler_payer',self.spw_bulet,100)
+                    self.scene.addObject('buler_payer',self.spw_bulet,25)
                     self.timeSot = 50
 
     def tradeGun(self):
