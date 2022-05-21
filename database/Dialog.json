@@ -1,0 +1,262 @@
+{
+    "Padrao": {
+        "Bob": [
+            {//Algo!!
+                "Condition": "True",
+                "Lines": [
+                    "Bob: Olá! Como vai?, Você e novo por aqui ?"
+                ],
+                "Commands": []
+            }
+        ],
+        "Gaz": [
+            {
+                "Condition": "True",
+                "Lines": [
+                    "Gaz:  Cara no momento estou muito ocupado, volta depois beleza"
+                ],
+                "Commands": [
+
+                ]
+            }
+        ]
+    },
+    "ato1": {
+        "Guardiao": [
+            {
+                "Condition": "True",
+                "Lines": [
+                    "Guardiao: Alto ! Diga alguma coisa ou vai levar chumbo !!",
+                    "Voce:  Opa !! nao  atire estou desarmado",
+                    "Guardiao: Nossa cara , pensei que você fosse um infectado ja ia manda chumbo..",
+                    "Você: Só estou procurando uma pessoa , você pode me ajudar ?",
+                    "Guardiao: Eu acho melhor você entrar, eu nao ficaria  ai fora parado dando sopa assim .",
+                    "Você: Sim , seria bom .....",
+                    "Guardiao: Entao pode entra "
+                ],
+                "Commands": [
+                    "globalDict['MissaoAtual'] = 'ato2'",
+                    "globalDict['ActualItem'] = 0",
+                    "globalDict['TextMission'] = 'Vá falçar com o Gaz'"
+                ]
+            }
+        ]
+    },
+    // Chegada no acampamento  
+    "ato2": {
+        "Gaz": [
+            {
+                "Condition": "True",
+                "Lines": [
+                    "Gaz: opa tudo bem eu me chamo 'Gaz', e você como se chama ?",
+                    "Você:  Prazer 'Gaz', me chamo Taylor",
+                    "Gaz: Em que posso te ajudar , o Guardiao me falou que você esta vindo da cidade central, fiquei sabendo que as coisas não estão muito boas por lá.",
+                    "Você: E verdade cara, a infecção esta se espalhando muito rapido, eu mesmo sai as preças de lá, acabei me separando do meu antigo grupo.",
+                    "Gaz: Bom cara ,o importante é esta vivo não e mesmo ?",
+                    "Você: Sim com certeza, e obrigado por me ajudar ",
+                    "Gaz: De nada cara , pode ficar a vontade ,descanse um pouco coma algo e sempre bom ter mais gente por aqui !!",
+                    "Você: Agradeço a hospitalidade mais não devo fircar por muito tempo, logo pela manha eu vou continuar a minha busca.",
+                    "Gaz: Cara você quem sabe , estamos precisando de toda ajuda possível por aqui, caso queira ficar será bem vindo.Descanse um pouco pela manhâ agente conversa beleza",
+                    "Você: Beleza "
+                ],
+                "Commands": [
+                    "globalDict['MissaoAtual'] = 'ato3'"
+                ]
+            }
+           
+        ]
+    },
+    // Conhecendo o Gaz ficando no acampamento
+    "ato3": {
+        "Gaz": [
+            {
+                "Condition": "True",
+                "Lines": [
+                    "Gaz: E ai cara tudo beleza?",
+                    "Você: Sim obrigado denovo pela estadia, pensei bem no que você me falou ontem e vou ficar um tempinho por aqui",
+                    "Gaz: Quem bom , estamos realmente precisando de ajuda por aqui, estamos com muitos feridos",
+                    "Você: Entendo, então como posso ser util?",
+                    "Gaz: Cara, procura o 'Bob' , ele esta cuidando de algumas coisas por aqui também ",
+                    "Você: Ok vou encontrar ele .."
+                ],
+                "Commands": [
+                    "globalDict['MissaoAtual'] = 'ato4'",
+                    "globalDict['TextMission'] = 'Encontre o Bob !'"
+                ]
+            }
+           
+        ]
+    },
+    // Ato -1 : Falando com Bob
+    "ato4": {
+        "Bob": [
+            {
+                "Condition": "True",
+                "Lines": [
+                    "Bob: Olá! Como vai?, Você e novo por aqui ?",
+                    "Voce:  Sim , estou procurando o Bob você conhece?",
+                    "Bob: Está falando com o próprio, em que posso te ajudar?",
+                    "Você: Há.. beleza! , o Gaz me pediu quem falasse com você, ele disse que eu poderia ser util em algo por aqui .",
+                    "Bob: Ok , então cara estamos precisando bastante de remédios, eu ouvi dizer que tem uma farmácia aqui por perto quem sabe você possa dar uma olhada la , talvez encontre algo .",
+                    "Você: Saquei..., vou ver oque posso fazer .",
+                    "Bob: Á ja ia me esquecendo, como você vai ir la fora nao seria uma boa idéia ir de mãos vazias , procure pelo Billy, ele vai arrumar algo pra você.",
+                    "Voce: Beleza."
+                ],
+                "Commands": [
+                    "globalDict['MissaoAtual'] = 'ato5'",
+                    "globalDict['TextMission'] = 'Encontre o Billy para obter armas !'"
+                ]
+            }
+           
+        ]
+    },
+    // Falando com o Billy primeira missão
+    "ato5": {
+        "Billy": [
+            {  
+                "Condition": "globalDict['MissaoStatus'] == 0",
+                "Lines": [
+                   "Billy: E ai beleza? Nunca te vi por essas bandas!",
+                   "Voce: Tranquilo, Você e o Billy?",
+                   "Billy: Sim , por que a pergunta?",
+                   "Você: Estou em uma missão para o Bob, ele me pediu para que eu falasse com você a respeito de algumas armas , vou ir la fora então nunca se sabe .. ",
+                   "Billy: Há sim ... nunca se sabe quand aquelas coisas vão surgir , ele tinha comentado comigo já a respeito da sua vinda, só precisava mesmo saber se era você...",
+                   "Você: Então , oque você tem para mim",
+                   "Billy: No momento só vou ter essa 'BESTA' e essa 'FACA-DE-COMBATE', mais acredito que vai ajudar, seja calteloso, munição e escarça por aqui..",
+                   "Você: OK, Muito obrigado !!!, vou la cara "
+                ],
+                "Commands": [
+                    "globalDict['MissaoAtual'] = 'Missao1'",
+                    "globalDict['TextMission'] = 'Encontre  onde estão os remédios e traga-os para Billy !!'",
+                    "globalDict['MissaoStatus'] = 2"
+                ]
+            }
+           
+           
+        ]
+    },
+    // Buscando os medicamentos
+    "Missao1": {
+        "Billy": [
+            {  
+                "Condition": "globalDict['MissaoStatus'] == 2",
+                "Lines": [
+                   "Billy: ha.... ainda esta por ai , vou aguardar você voltar com os remédios ok !!"
+                ],
+                "Commands": []
+            },
+            {  
+                "Condition": "globalDict['MissaoStatus'] == 3",
+                "Lines": [
+                   "Billy: Cara valeu mesmo isso vai ajudar nuitas pessoas ",
+                   "Billy: Fala com Bob pra ver se ele tem mais aluma coisa para você",
+                   "Você: OK, vou la cara "
+                ],
+                "Commands": [
+                    "globalDict['MissaoAtual'] = 'Missao2'",
+                    "globalDict['Item'] = '' ",
+                    "globalDict['MissaoStatus'] == 0",
+                    "globalDict['TextMission'] = 'Bob >> Nescessito de sua ajuda aqui assim que possível , aguardo !!'"
+                ]
+            }
+           
+        ]
+    },
+    // Buscando combustivel
+    "Missao2": {
+        "Bob": [
+            {  
+                "Condition":  "globalDict['MissaoStatus'] == 0",
+                "Lines": [
+                  "Bob: Cara..... estamos com um problema de energia talvez você possa ajudar , vai la falar com o 'Ted' ele vai explicar melhor ",
+                  "Você: OK, vou sim "
+                ],
+                "Commands": [
+                   "globalDict['MissaoStatus'] = 1",
+                   "globalDict['TextMission'] = 'Encontre o Ted para resolver o problema de energia'"
+                ]
+            },
+            {  
+                "Condition":  "globalDict['MissaoStatus'] == 1",
+                "Lines": [
+                  "Bob: Cê ainda ta ai ,beleza depois fala com o Ted ",
+                  "Você: OK, vou sim "
+                ],
+                "Commands": [
+
+                ]
+            }
+           
+           
+        ],
+        "Ted": [
+            {  
+                "Condition":  "globalDict['MissaoStatus'] == 1",
+                "Lines": [
+                 "Ted: Opa e ai cara tudo bem , estou com um problema aqui no gerador de energia falei com o Bob mais parece que ele está sem tempo ",
+                 "Você: Ham... na verdade o Bob pediu que eu viesse aqui para te ajudar",
+                 "Ted: Haaa... nem acredito , entao cara eu nao tenho como resolver o problema do gerador sem combustível , se você pode arrumar uns galoes agradeceria",
+                 "Você: Pode deixar vou em busca disso para você",
+                 "Ted: Valeu cara , tem um posto nao muito longe daqui talvez ainda aja algo la ",
+                 "Você: OK, vou la dar uma olhada "
+                ],
+                "Commands": [
+                   "globalDict['MissaoStatus'] = 2",
+                   "globalDict['TextMission'] = 'Encontre  onde estão os galoes de combustível e traga-os para Ted !!'"
+                ]
+            },
+            {  
+                "Condition":  "globalDict['MissaoStatus'] == 2",
+                "Lines": [
+                  "Ted: Não posso fazer muita coisa sem o combustivel !!!"
+                ],
+                "Commands": [
+
+                ]
+            },
+            {  
+                "Condition":  "globalDict['MissaoStatus'] == 3",
+                "Lines": [
+                 "Ted: Valeu mesmo cara vou testar aqui e depois te falo se deu certo ok",
+                 "Voce: Beleza."
+                  
+                ],
+                "Commands": [
+                    "globalDict['MissaoAtual'] = 'Missao3'",
+                    "globalDict['MissaoStatus'] = 0",
+                    "globalDict['TextMission'] = 'Bob >> Opa da um pulinho aqui cara' "
+                    
+
+                ]
+            }
+           
+           
+        ]
+    },
+    "Missao3": {
+        "Bob": [
+            {  
+                "Condition":"globalDict['MissaoStatus'] == 0",
+                "Lines": [
+                  
+                ],
+                "Commands": []
+            }
+           
+           
+        ]
+    },
+    "Test": {
+        "Bob": [
+            {  
+                "Condition": "",
+                "Lines": [
+                  
+                ],
+                "Commands": []
+            }
+           
+           
+        ]
+    }
+}

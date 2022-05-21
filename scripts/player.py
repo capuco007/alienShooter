@@ -8,9 +8,9 @@ def start(cont):
     scene = own.scene
     own['GunList'] = []
     own['gunSpw'] = ""
+    bge.logic.globalDict['text'] = 'fala_0'
+    bge.logic.globalDict['pause'] = False
     
-    
-
 def Colision(cont):
     own = cont.owner
     scene = own.scene
@@ -80,13 +80,9 @@ class Player(bge.types.KX_PythonComponent):
         self.timeSaveLoad = 0
         if 'load' in  bge.logic.globalDict:
             self.timeSaveLoad =  bge.logic.globalDict['load']
-
-
-        
-
-       
-        
-    
+ 
+    def dialogs(self):
+        pass
     def onCollision(self,object):
         if 'dano' in object:
             bge.logic.sendMessage('shake')
@@ -116,6 +112,12 @@ class Player(bge.types.KX_PythonComponent):
             if object['save'] == True:
                 self.timeSaveLoad = 5
                 object['save'] = False
+
+        if 'fala' in object:
+            bge.logic.globalDict['text'] = object['fala']
+            object.endObject()
+            bge.logic.sendMessage('dialog')
+            self.object['text'] = 10
             
     def move(self):
         kb = bge.logic.keyboard.inputs
@@ -241,29 +243,47 @@ class Player(bge.types.KX_PythonComponent):
         self.timeSot = 0
         #self.object['GunList'].reverse()
         mesh_arm_p.replaceMesh( str(self.object['GunList'][0]))
-                
+
+    def dialogs(self):
+
+        if self.object['text'] > 1:
+            self.object['text'] -= 1
+
+        if self.object['text'] == 1:
+            bge.logic.setTimeScale(0.0)
+            
+
     def update(self):
-        print(self.timeSaveLoad)
+        if bge.logic.keyboard.inputs[bge.events.SPACEKEY].activated and bge.logic.globalDict['text'] != 'fala_0':
+            self.object['text'] = 0
+            bge.logic.globalDict['text'] = 'fala_0'
+            bge.logic.sendMessage('dialog')
+            bge.logic.sendMessage('notdialog')
         
-        if self.life > 0:
+        print(self.object['text'])
+        
+        if self.object['text'] == 0:
+            if self.life > 0:
 
-            self.move()
-            self.shot()
-            self.efects()
-            self.tradeGun()
+                self.move()
+                self.shot()
+                self.efects()
+                self.tradeGun()
+                self.dialogs()
 
-            if bge.logic.keyboard.inputs[bge.events.F1KEY].activated:
-                self.load()
+                if bge.logic.keyboard.inputs[bge.events.F1KEY].activated:
+                    self.load()
 
-            if bge.logic.keyboard.inputs[bge.events.F2KEY].activated:
-                self.save()
+                if bge.logic.keyboard.inputs[bge.events.F2KEY].activated:
+                    self.save()
 
-            if self.activeDash:
-                self.dash()
+                if self.activeDash:
+                    self.dash()
+            else:
+                bge.logic.globalDict['load'] = -5
+                bge.logic.restartGame()
         else:
-            bge.logic.globalDict['load'] = -10
-            bge.logic.restartGame()
-           
+            self.char.walkDirection = Vector([0,0,0]).normalized()*self.speed
 
         if self.timeSaveLoad >0:
             self.timeSaveLoad -= 1
