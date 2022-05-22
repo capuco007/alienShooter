@@ -51,10 +51,10 @@ def update(cont):
 
 
         if Collision.positive and own.groupObject['life'] > 0:
-            own.groupObject['life'] -= 1
+            own.groupObject['vida'] -= 1
             
 
-        if own.groupObject['life'] == 0:
+        if own.groupObject['vida'] == 0:
             own['group'].endObject()
             scene.addObject('spw_coin',own,0)
         
