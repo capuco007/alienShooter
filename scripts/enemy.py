@@ -7,7 +7,7 @@ def start(cont):
     scene = own.scene
     track = cont.actuators['track']
     own['pl'] = [obj for obj in scene.objects if 'player' in obj]
-    own['life'] = own.groupObject['life']
+    own['vida'] = own.groupObject['vida']
     own['time'] = 0
     own['x'] = 0
     own['y'] = 0
