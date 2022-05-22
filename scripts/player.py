@@ -260,7 +260,7 @@ class Player(bge.types.KX_PythonComponent):
             bge.logic.sendMessage('dialog')
             bge.logic.sendMessage('notdialog')
         
-        print(self.object['text'])
+        
         
         if self.object['text'] == 0:
             if self.life > 0:
