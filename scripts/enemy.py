@@ -1,7 +1,11 @@
 import bge
 import random
+from bge.types import *
+
 
 def start(cont):
+    # type: (SCA_PythonController) -> None
+
     bge.logic.globalDict['text'] = 'fala_0'
     own = cont.owner
     scene = own.scene
@@ -20,21 +24,14 @@ def start(cont):
     if colideMesh.positive:
         arena = colideMesh.hitObject
         mesh =  arena.childrenRecursive.get('navMesh')
-       
 
-            
         track.target = pl
         track.navmesh = mesh #scene.objects['navemesh']
-           
 
-        #cont.activate(track)
-    
-    
-    
 
 def update(cont):
+    # type: (SCA_PythonController) -> None
 
-    
     own = cont.owner
     scene = own.scene
     track = cont.actuators['track']
@@ -49,37 +46,31 @@ def update(cont):
         if own['time'] > 0:
             own['time'] -= 1
 
-
-        if Collision.positive and own.groupObject['life'] > 0:
+        if Collision.positive and own.groupObject['vida'] > 0:
             own.groupObject['vida'] -= 1
-            
 
         if own.groupObject['vida'] == 0:
             own['group'].endObject()
             scene.addObject('spw_coin',own,0)
-        
 
         if own['pl']:
             dis = own.getDistanceTo( own['pl'][0])
-            
-            
-            # Enemy tipo 1
 
+            # Enemy tipo 1
             if '1' in own['group']['enemyTipe']:
                 if dis> 2 and dis < 20:
                     own.applyMovement([0,0.1,0], True)
                     pass
                 if dis <= 2:
-                    
+
                     if own['atack'] == 0:
                         own['atack'] = 50
                 if own['atack'] == 49:
                     scene.addObject('dano_player',own['spw_dano'],1)
-                
+
             # Enemy tipo 2
-            
             if '2' in own['group']['enemyTipe']:
-                if dis >15 and dis < 20:  
+                if dis >15 and dis < 20:
                     own.applyMovement([0,0.1,0], True)
                     pass
                 if dis > 5 and dis <= 15:
@@ -87,8 +78,8 @@ def update(cont):
                         own['atack'] = -80
                 if own['atack'] == -79:
                     scene.addObject('dano',own['spw_dano'],100)
-            
-            
+
+
                 if dis <=10:
                     if own['time'] == 0:
                         own['time'] = 50
@@ -104,19 +95,17 @@ def update(cont):
                     scene.addObject('dano_player',own['spw_dano'],1)
 
             # Enemy tipo 3
-
             if '3' in own['group']['enemyTipe']:
                 if dis> 2 and dis < 20:
                     own.applyMovement([0,0.1,0], True)
                     pass
                 if dis <= 2:
-                    
+
                     if own['atack'] == 0:
                         own['atack'] = 50
                 if own['atack'] == 1:
                     scene.addObject('exploid',own)
                     own.endObject()
-                
 
         if own['atack'] > 0:
             own['atack'] -= 1
@@ -129,6 +118,3 @@ def update(cont):
     else:
         cont.deactivate(track)
 
-   
-   
-        
