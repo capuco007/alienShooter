@@ -75,7 +75,8 @@ class Player(bge.types.KX_PythonComponent):
         self.activeDash = False
         self.estamina = 100
         self.recargEstam = 100
-        self.key = ['1']
+        self.key = []
+        bge.logic.sendMessage('in')
         
         self.timeSaveLoad = 0
         if 'load' in  bge.logic.globalDict:
@@ -83,6 +84,7 @@ class Player(bge.types.KX_PythonComponent):
  
     def dialogs(self):
         pass
+
     def onCollision(self,object):
         if 'dano' in object:
             bge.logic.sendMessage('shake')
@@ -106,18 +108,28 @@ class Player(bge.types.KX_PythonComponent):
             if tc[bge.events.EKEY].activated:
                 if object.groupObject['key'] in self.key:
                     object['openDor'] = True
+                else:
+                    bge.logic.globalDict['text'] = object.groupObject['fala_key']
+                    bge.logic.sendMessage('dialog')
+                    self.object['text'] = 10
 
         if 'save' in object:
-            
             if object['save'] == True:
                 self.timeSaveLoad = 5
                 object['save'] = False
+
 
         if 'fala' in object:
             bge.logic.globalDict['text'] = object['fala']
             object.endObject()
             bge.logic.sendMessage('dialog')
             self.object['text'] = 10
+
+        if 'keyPass' in object:
+            tc = bge.logic.keyboard.inputs
+            if not object.groupObject['keyPass'] in self.key:
+                self.key.append(object.groupObject['keyPass'])
+                object.endObject()
             
     def move(self):
         kb = bge.logic.keyboard.inputs
@@ -156,6 +168,7 @@ class Player(bge.types.KX_PythonComponent):
                     mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
                     self.timeSot = 0
                     self.object['GunList'].reverse()
+                    bge.logic.sendMessage('trade')
                     mesh_arm_p.replaceMesh( str(self.object['GunList'][0]))
                
     def dash(self):
@@ -175,9 +188,11 @@ class Player(bge.types.KX_PythonComponent):
         if self.estamina < 100:
             self.estamina += 1
 
-    def efects(self):
-        pass
-
+    def hud(self):
+        if self.object['GunList']:
+            bge.logic.globalDict['gun'] = self.object['GunList']
+        bge.logic.globalDict['lifePlayer'] = self.life
+            
     def save(self):
         savegame = {
             'player': {
@@ -252,7 +267,6 @@ class Player(bge.types.KX_PythonComponent):
         if self.object['text'] == 1:
             bge.logic.setTimeScale(0.0)
             
-
     def update(self):
         if bge.logic.keyboard.inputs[bge.events.SPACEKEY].activated and bge.logic.globalDict['text'] != 'fala_0':
             self.object['text'] = 0
@@ -260,14 +274,14 @@ class Player(bge.types.KX_PythonComponent):
             bge.logic.sendMessage('dialog')
             bge.logic.sendMessage('notdialog')
         
-        
+        self.object['vida'] = self.life
         
         if self.object['text'] == 0:
             if self.life > 0:
 
                 self.move()
                 self.shot()
-                self.efects()
+                self.hud()
                 self.tradeGun()
                 self.dialogs()
 
@@ -280,13 +294,16 @@ class Player(bge.types.KX_PythonComponent):
                 if self.activeDash:
                     self.dash()
             else:
-                bge.logic.globalDict['load'] = -5
-                bge.logic.restartGame()
+                bge.logic.sendMessage('pause')
+                #bge.logic.globalDict['load'] = -5
+                #bge.logic.restartGame()
         else:
             self.char.walkDirection = Vector([0,0,0]).normalized()*self.speed
 
         if self.timeSaveLoad >0:
             self.timeSaveLoad -= 1
+            bge.logic.sendMessage('save_icon')
+            
 
         if self.timeSaveLoad < -0:
             self.timeSaveLoad += 1

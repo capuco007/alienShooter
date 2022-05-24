@@ -16,11 +16,12 @@ def update(cont):
     Colision_play = cont.sensors['Colision_p']
     Colision_enemy = cont.sensors['Colision_en']
     
-
+    
     if Colision_play.positive and own.groupObject['status'] == 0:
         own['port_entre'].playAction('porta_entra',0,5,play_mode = 0)
         own['port_said'].playAction('porta_said',0,5,play_mode = 0)
         own.groupObject['status'] = 1
+        
 
     if Colision_enemy.positive and own.groupObject['status'] == 1:
         own.groupObject['status'] = 2
