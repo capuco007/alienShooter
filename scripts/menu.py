@@ -63,7 +63,7 @@ def update(cont):
                         own['transition'] = 'load'
         if own['fade'] == 20 and own['transition'] == 'load':              
             menu_pos.worldPosition = [6.0,0.0,0.0]
-            bge.logic.globalDict['load'] = -2
+            bge.logic.globalDict['load'] = -5
             bge.logic.addScene('Game', 0)
             own['status'] = 'game'
             bge.logic.sendMessage('out') 

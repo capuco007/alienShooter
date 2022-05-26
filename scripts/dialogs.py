@@ -32,9 +32,17 @@ def trades(cont):
     LB = own.childrenRecursive.get('lifeBar')
     L_1 = own.childrenRecursive.get('L_1')
     L_2 = own.childrenRecursive.get('L_2')
+    if 'estamina' in bge.logic.globalDict:
+        own['estaminaP'] = bge.logic.globalDict['estamina']
+
     if 'lifePlayer' in bge.logic.globalDict:
         own['vidaPlayer'] = bge.logic.globalDict['lifePlayer']
-        
+
+    if bge.logic.globalDict['keysicon'] == None:
+        bge.logic.sendMessage('keyVisibleFalse')
+    else:
+        own['keyIcon'] = False
+        bge.logic.sendMessage('keyVisibleTrue')
 
     if 'gun' in bge.logic.globalDict:
         L_1.replaceMesh(bge.logic.globalDict['gun'][0])

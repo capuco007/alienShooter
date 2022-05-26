@@ -75,7 +75,7 @@ class Player(bge.types.KX_PythonComponent):
         self.activeDash = False
         self.estamina = 100
         self.recargEstam = 100
-        self.key = []
+        self.key = None
         bge.logic.sendMessage('in')
         
         self.timeSaveLoad = 0
@@ -86,6 +86,10 @@ class Player(bge.types.KX_PythonComponent):
         pass
 
     def onCollision(self,object):
+        if 'interect' in object:
+            
+            bge.logic.sendMessage('interage')
+
         if 'dano' in object:
             bge.logic.sendMessage('shake')
             if self.life >0:
@@ -106,8 +110,9 @@ class Player(bge.types.KX_PythonComponent):
         if 'openDor' in object:
             tc = bge.logic.keyboard.inputs
             if tc[bge.events.EKEY].activated:
-                if object.groupObject['key'] in self.key:
+                if object.groupObject['key'] == self.key:
                     object['openDor'] = True
+                    self.key = None
                 else:
                     bge.logic.globalDict['text'] = object.groupObject['fala_key']
                     bge.logic.sendMessage('dialog')
@@ -127,8 +132,8 @@ class Player(bge.types.KX_PythonComponent):
 
         if 'keyPass' in object:
             tc = bge.logic.keyboard.inputs
-            if not object.groupObject['keyPass'] in self.key:
-                self.key.append(object.groupObject['keyPass'])
+            if not object.groupObject['keyPass'] == self.key:
+                self.key = object.groupObject['keyPass']
                 object.endObject()
             
     def move(self):
@@ -145,18 +150,23 @@ class Player(bge.types.KX_PythonComponent):
         if self.object['GunList']:
             if self.object['GunList'][0] == 'pistola':
                 if ms[bge.events.LEFTMOUSE].active and self.timeSot == 0:
-                    self.scene.addObject('buler_payer',self.spw_bulet,25)
-                    self.timeSot = 10
+                    self.scene.addObject('buler_payer',self.spw_bulet,20)
+                    self.timeSot = 15
 
             if self.object['GunList'][0] == 'metralhadora':
                 if ms[bge.events.LEFTMOUSE].active and self.timeSot == 0:
-                    self.scene.addObject('buler_payer',self.spw_bulet,25)
+                    self.scene.addObject('buler_payer',self.spw_bulet,20)
                     self.timeSot = 5
 
             if self.object['GunList'][0] == 'shotgun':
                 if ms[bge.events.LEFTMOUSE].active and self.timeSot == 0:
-                    self.scene.addObject('buler_payer',self.spw_bulet,25)
-                    self.timeSot = 50
+                    self.scene.addObject('buler_payer',self.spw_bulet,20)
+                    self.timeSot = 35
+
+            if self.object['GunList'][0] == 'pedecabra':
+                if ms[bge.events.LEFTMOUSE].activated and self.timeSot == 0:
+                    self.scene.addObject('atack_player',self.spw_bulet,1)
+                    self.timeSot = 20
 
     def tradeGun(self):
         mesh_arm_p = self.object.childrenRecursive.get('mesh_arm_p')
@@ -201,7 +211,8 @@ class Player(bge.types.KX_PythonComponent):
                 'cash': self.cash,
                 'recargEstam': self.recargEstam,
                 'position': list(self.object.worldPosition),
-                'activeDash': self.activeDash
+                'activeDash': self.activeDash,
+                'keys': self.key
             },
             'objects': [],
         }
@@ -244,6 +255,7 @@ class Player(bge.types.KX_PythonComponent):
             self.recargEstam = savegame['player']['recargEstam']
             self.object.worldPosition = savegame['player']['position']
             self.activeDash = savegame['player']['activeDash']
+            self.key = savegame['player']['keys']
 
             for o in self.object.scene.objects:
                 if 'save' in o and not o.name in savegame['objects']:
@@ -278,6 +290,9 @@ class Player(bge.types.KX_PythonComponent):
         
         if self.object['text'] == 0:
             if self.life > 0:
+                self.cash = self.object['coin_player']
+                bge.logic.globalDict['estamina'] = self.estamina
+                bge.logic.globalDict['keysicon'] = self.key
 
                 self.move()
                 self.shot()
