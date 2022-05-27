@@ -113,10 +113,12 @@ class Player(bge.types.KX_PythonComponent):
                 if object.groupObject['key'] == self.key:
                     object['openDor'] = True
                     self.key = None
+                    object['status'] = 1
                 else:
-                    bge.logic.globalDict['text'] = object.groupObject['fala_key']
-                    bge.logic.sendMessage('dialog')
-                    self.object['text'] = 10
+                    if object['status'] == 0:
+                        bge.logic.globalDict['text'] = object.groupObject['fala_key']
+                        bge.logic.sendMessage('dialog')
+                        self.object['text'] = 10
 
         if 'save' in object:
             if object['save'] == True:
