@@ -21,6 +21,7 @@ def start(cont):
     colideMesh = cont.sensors['colideMesh']
     pl = scene.objects['player']
     own['group'] = own.groupObject
+    own['arm'] = own.childrenRecursive.get('Armature')
 
     if colideMesh.positive:
         arena = colideMesh.hitObject
@@ -38,87 +39,102 @@ def update(cont):
     Collision = cont.sensors['Collision']
     dis = own.getDistanceTo( own['pl'][0])
 
-    if dis <= 20:
-        own['active'] = True
+    if Collision.positive and own.groupObject['vida'] > 0:
+        own.groupObject['vida'] -= 1
 
-    if own['active']:
-        if bge.logic.globalDict['text'] == 'fala_0':
+    if own.groupObject['vida'] == 0:
+        own.suspendPhysics()
+        own['arm'].playAction('alien_shot_death',1,57,play_mode = 0,blendin = 5)
+        act = own['arm'].getActionFrame(0)
+        print(act)
+        if act >= 53.0:
+            own.groupObject['vida'] = -1
+            own['group'].endObject()
+            scene.addObject('spw_coin',own,0)
+    if own.groupObject['vida']  >0:
+        if dis <= 20:
+            own['active'] = True
 
-            if own['time'] == 0:
-                own['x'] = 0
+        if own['active']:
+            if bge.logic.globalDict['text'] == 'fala_0':
 
-            if own['time'] > 0:
-                own['time'] -= 1
+                if own['time'] == 0:
+                    own['x'] = 0
 
-            if Collision.positive and own.groupObject['vida'] > 0:
-                own.groupObject['vida'] -= 1
+                if own['time'] > 0:
+                    own['time'] -= 1
 
-            if own.groupObject['vida'] == 0:
-                own['group'].endObject()
-                scene.addObject('spw_coin',own,0)
+                
 
-            if own['pl']:
-                dis = own.getDistanceTo( own['pl'][0])
+                if own['pl']:
+                    dis = own.getDistanceTo( own['pl'][0])
 
-                # Enemy tipo 1
-                if '1' in own['group']['enemyTipe']:
-                    if dis> 2 and dis < 20:
-                        own.applyMovement([0,0.1,0], True)
-                        pass
-                    if dis <= 2:
+                    # Enemy tipo 1
+                    if '1' in own['group']['enemyTipe']:
+                        if dis> 2 and dis < 20:
+                            own.applyMovement([0,0.1,0], True)
+                            pass
+                        if dis <= 2:
 
-                        if own['atack'] == 0:
-                            own['atack'] = 50
-                    if own['atack'] == 49:
-                        scene.addObject('dano_player',own['spw_dano'],1)
+                            if own['atack'] == 0:
+                                own['atack'] = 50
+                        if own['atack'] == 49:
+                            scene.addObject('dano_player',own['spw_dano'],1)
 
-                # Enemy tipo 2
+                    # Enemy tipo 2
+                    if '2' in own['group']['enemyTipe']:
+                        if dis >15 and dis < 20:
+                            own['arm'].playAction('walk_alien_shot',1,25,play_mode = 1,blendin = 5)
+                            own.applyMovement([0,0.1,0], True)
+                            pass
+                        if dis > 5 and dis <= 15:
+                            if own['atack'] == 0:
+                                own['atack'] = -80
+                        if own['atack'] == -79:
+                            scene.addObject('dano',own['spw_dano'],100)
+
+
+                        if dis <=10:
+                            if own['time'] == 0:
+                                own['time'] = 50
+                            if own['time'] == 49:
+                                own['x'] = random.randint(-1, 1)
+                                own['arm'].playAction('walk_alien_shot',1*own['x'],25*own['x'],play_mode = 1,blendin = 5)
+                            own.applyMovement([own['x']/8,-0.1,0], True)
+                            pass
+                        if dis < 5:
+                            if own['atack'] == 0:
+                                own['atack'] = 50
+
+                        if own['atack'] == 49:
+                            own['arm'].playAction('alien_shot_atack',1,57,play_mode = 0,blendin = 5)
+                            scene.addObject('dano_player',own['spw_dano'],1)
+
+                    # Enemy tipo 3
+                    if '3' in own['group']['enemyTipe']:
+                        if dis> 2 and dis < 20:
+                            own.applyMovement([0,0.1,0], True)
+                            pass
+                        if dis <= 2:
+
+                            if own['atack'] == 0:
+                                own['atack'] = 50
+                        if own['atack'] == 1:
+                            scene.addObject('exploid',own)
+                            own.endObject()
+
+                if own['atack'] > 0:
+                    own['atack'] -= 1
+
+                if own['atack'] < -0:
+                    own['atack'] +=1
+
+                if dis < 20:
+                    cont.activate(track)
+            else:
+                cont.deactivate(track)
                 if '2' in own['group']['enemyTipe']:
-                    if dis >15 and dis < 20:
-                        own.applyMovement([0,0.1,0], True)
-                        pass
-                    if dis > 5 and dis <= 15:
-                        if own['atack'] == 0:
-                            own['atack'] = -80
-                    if own['atack'] == -79:
-                        scene.addObject('dano',own['spw_dano'],100)
+                    own['arm'].playAction('idle_shot_idle',1,161,play_mode = 1,blendin = 5)
 
-
-                    if dis <=10:
-                        if own['time'] == 0:
-                            own['time'] = 50
-                        if own['time'] == 49:
-                            own['x'] = random.randint(-1, 1)
-                        own.applyMovement([own['x']/8,-0.1,0], True)
-                        pass
-                    if dis < 5:
-                        if own['atack'] == 0:
-                            own['atack'] = 50
-
-                    if own['atack'] == 49:
-                        scene.addObject('dano_player',own['spw_dano'],1)
-
-                # Enemy tipo 3
-                if '3' in own['group']['enemyTipe']:
-                    if dis> 2 and dis < 20:
-                        own.applyMovement([0,0.1,0], True)
-                        pass
-                    if dis <= 2:
-
-                        if own['atack'] == 0:
-                            own['atack'] = 50
-                    if own['atack'] == 1:
-                        scene.addObject('exploid',own)
-                        own.endObject()
-
-            if own['atack'] > 0:
-                own['atack'] -= 1
-
-            if own['atack'] < -0:
-                own['atack'] +=1
-
-            if dis < 20:
-                cont.activate(track)
-        else:
-            cont.deactivate(track)
-
+    else:
+        cont.deactivate(track)

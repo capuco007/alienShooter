@@ -10,6 +10,7 @@ def start(cont):
 
     # Dialogos 
     textFalas = {
+        'inicio':'',
         'fala_0': '',
         'fala_1': 'Nossa que fome e essa, \n acho que vou tomar aquele chocolate quente !',
         'fala_2': 'Tudo bem ?',

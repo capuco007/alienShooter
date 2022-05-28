@@ -93,7 +93,7 @@ class Player(bge.types.KX_PythonComponent):
         if 'dano' in object:
             bge.logic.sendMessage('shake')
             if self.life >0:
-                self.life -= 1
+                self.life -= 0
 
         if 'dash' in object:
             tc = bge.logic.keyboard.inputs
